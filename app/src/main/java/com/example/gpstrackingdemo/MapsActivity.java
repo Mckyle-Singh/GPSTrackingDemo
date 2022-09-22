@@ -2,6 +2,7 @@ package com.example.gpstrackingdemo;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.location.Location;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,10 +13,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.gpstrackingdemo.databinding.ActivityMapsBinding;
 
+import java.util.List;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+
+
+    List<Location> savedLocations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        MyApplication myApplication=(MyApplication) getApplicationContext();
+        savedLocations =myApplication.getMyLocations();
     }
 
     /**
@@ -45,7 +54,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+       // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        for (Location location:savedLocations)
+        {
+            LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+            MarkerOptions markerOptions= new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title("Lat:"+location.getLatitude() +"Long:"+location.getLongitude());
+            mMap.addMarker(markerOptions);
+        }
     }
 }
